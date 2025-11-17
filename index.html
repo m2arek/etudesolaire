@@ -2592,14 +2592,39 @@ async function remplirEtTelechargerRapportPDF() {
     // 2. Définition de l'emplacement du PDF
     // Remplacez cette URL par l'accès direct à votre PDF sur GitHub (ex: lien "Raw" ou GitHub Pages)
     const formUrl = 'rapport.pdf'; // PDF local à la racine du projet
+    const fontRegularUrl = 'ARIAL.TTF';
+    const fontBoldUrl = 'ARIALBD.TTF';
 
     try {
         // 3. Chargement du PDF
         const existingPdfBytes = await fetch(formUrl).then(res => res.arrayBuffer());
         const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
 
+        // 3bis. Chargement et intégration des polices locales
+        let arialFont;
+        let arialBoldFont;
+        try {
+            const [arialBytes, arialBoldBytes] = await Promise.all([
+                fetch(fontRegularUrl).then(res => {
+                    if (!res.ok) throw new Error('Impossible de charger ARIAL.TTF');
+                    return res.arrayBuffer();
+                }),
+                fetch(fontBoldUrl).then(res => {
+                    if (!res.ok) throw new Error('Impossible de charger ARIALBD.TTF');
+                    return res.arrayBuffer();
+                })
+            ]);
+            arialFont = await pdfDoc.embedFont(arialBytes);
+            arialBoldFont = await pdfDoc.embedFont(arialBoldBytes);
+        } catch (fontError) {
+            console.warn('Polices Arial introuvables, Helvetica sera utilisée par défaut.', fontError);
+            arialFont = await pdfDoc.embedStandardFont(PDFLib.StandardFonts.Helvetica);
+            arialBoldFont = arialFont;
+        }
+
         // 4. Accès au formulaire
         const form = pdfDoc.getForm();
+        form.updateFieldAppearances(arialFont);
 
         // 5. Remplissage des champs
         // ATTENTION : 'clientname' et 'address' DOIVENT correspondre aux clientnames exacts des champs de votre formulaire PDF.
@@ -2610,6 +2635,7 @@ async function remplirEtTelechargerRapportPDF() {
 
         if (clientnameField) {
             clientnameField.setText(clientname);
+            clientnameField.updateAppearances(arialBoldFont);
         } else {
             console.warn("Champ PDF 'clientname' non trouvé.");
         }
@@ -2628,6 +2654,7 @@ async function remplirEtTelechargerRapportPDF() {
 
         if (addressField) {
             addressField.setText(address);
+            addressField.updateAppearances(arialFont);
         } else {
             console.warn("Champ PDF 'address' non trouvé.");
         }
