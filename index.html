@@ -2574,12 +2574,18 @@ function runBatt(){
 async function remplirEtTelechargerRapportPDF() {
     // 1. Récupération des données dynamiques depuis votre HTML
     // Assurez-vous que ces IDs correspondent à vos champs d'entrée actuels.
-    const clientname = document.getElementById('clientnameClient') ? document.getElementById('clientnameClient').value : 'clientname du Client (Non trouvé)';
-    const address = document.getElementById('addressProjet') ? document.getElementById('addressProjet').value : 'address du Projet (Non trouvée)';
+    const clientnameInput = document.getElementById('clientName');
+    const addressInput = document.getElementById('address');
+    const clientname = clientnameInput && clientnameInput.value.trim() !== ''
+        ? clientnameInput.value.trim()
+        : 'Nom du Client (Non renseigné)';
+    const address = addressInput && addressInput.value.trim() !== ''
+        ? addressInput.value.trim()
+        : 'Adresse du projet (Non renseignée)';
 
     // 2. Définition de l'emplacement du PDF
     // Remplacez cette URL par l'accès direct à votre PDF sur GitHub (ex: lien "Raw" ou GitHub Pages)
-    const formUrl = 'https://raw.githubusercontent.com/m2arek/etudesolaire/main/rapport.pdf'; // Modifiez si le PDF est dans un autre dossier ou sur une URL complète
+    const formUrl = 'rapport.pdf'; // PDF local à la racine du projet
 
     try {
         // 3. Chargement du PDF
