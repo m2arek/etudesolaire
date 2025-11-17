@@ -2576,12 +2576,18 @@ async function remplirEtTelechargerRapportPDF() {
     // Assurez-vous que ces IDs correspondent à vos champs d'entrée actuels.
     const clientnameInput = document.getElementById('clientName');
     const addressInput = document.getElementById('address');
+    const pwrInput = document.getElementById('pwr');
+    const kscDisplay = document.getElementById('k_sc');
     const clientname = clientnameInput && clientnameInput.value.trim() !== ''
         ? clientnameInput.value.trim()
         : 'Nom du Client (Non renseigné)';
     const address = addressInput && addressInput.value.trim() !== ''
         ? addressInput.value.trim()
         : 'Adresse du projet (Non renseignée)';
+    const pwrRaw = pwrInput ? pwrInput.value.trim() : '';
+    const kscRaw = kscDisplay ? kscDisplay.textContent.trim() : '';
+    const pwrValue = pwrRaw !== '' ? pwrRaw : '—';
+    const kscValue = kscRaw !== '' ? kscRaw : '—';
 
     // 2. Définition de l'emplacement du PDF
     // Remplacez cette URL par l'accès direct à votre PDF sur GitHub (ex: lien "Raw" ou GitHub Pages)
@@ -2597,13 +2603,27 @@ async function remplirEtTelechargerRapportPDF() {
 
         // 5. Remplissage des champs
         // ATTENTION : 'clientname' et 'address' DOIVENT correspondre aux clientnames exacts des champs de votre formulaire PDF.
-        const clientnameField = form.getTextField('clientname'); 
+        const clientnameField = form.getTextField('clientname');
         const addressField = form.getTextField('address');
+        const pwrField = form.getTextField('pwr');
+        const kscField = form.getTextField('k_sc');
 
         if (clientnameField) {
             clientnameField.setText(clientname);
         } else {
             console.warn("Champ PDF 'clientname' non trouvé.");
+        }
+
+        if (pwrField) {
+            pwrField.setText(pwrValue);
+        } else {
+            console.warn("Champ PDF 'pwr' non trouvé.");
+        }
+
+        if (kscField) {
+            kscField.setText(kscValue);
+        } else {
+            console.warn("Champ PDF 'k_sc' non trouvé.");
         }
 
         if (addressField) {
