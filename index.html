@@ -2624,7 +2624,6 @@ async function remplirEtTelechargerRapportPDF() {
 
         // 4. Accès au formulaire
         const form = pdfDoc.getForm();
-        form.updateFieldAppearances(arialFont);
 
         // 5. Remplissage des champs
         // ATTENTION : 'clientname' et 'address' DOIVENT correspondre aux clientnames exacts des champs de votre formulaire PDF.
@@ -2633,28 +2632,33 @@ async function remplirEtTelechargerRapportPDF() {
         const pwrField = form.getTextField('pwr');
         const kscField = form.getTextField('k_sc');
 
+        const applyTextWithFont = (field, text, font) => {
+            if (!field) return false;
+            field.setText(text);
+            field.updateAppearances(font);
+            return true;
+        };
+
         if (clientnameField) {
-            clientnameField.setText(clientname);
-            clientnameField.updateAppearances(arialBoldFont);
+            applyTextWithFont(clientnameField, clientname, arialBoldFont);
         } else {
             console.warn("Champ PDF 'clientname' non trouvé.");
         }
 
         if (pwrField) {
-            pwrField.setText(pwrValue);
+            applyTextWithFont(pwrField, pwrValue, arialFont);
         } else {
             console.warn("Champ PDF 'pwr' non trouvé.");
         }
 
         if (kscField) {
-            kscField.setText(kscValue);
+            applyTextWithFont(kscField, kscValue, arialFont);
         } else {
             console.warn("Champ PDF 'k_sc' non trouvé.");
         }
 
         if (addressField) {
-            addressField.setText(address);
-            addressField.updateAppearances(arialFont);
+            applyTextWithFont(addressField, address, arialFont);
         } else {
             console.warn("Champ PDF 'address' non trouvé.");
         }
